@@ -144,6 +144,9 @@ ENV/
 env.bak/
 venv.bak/
 
+# Model files
+models/
+
 # Spyder project settings
 .spyderproject
 .spyproject
@@ -209,3 +212,6 @@ __marimo__/
 
 # Mac System files
 .DS_Store
+
+# Output files
+output-wan21/
