@@ -1,0 +1,6 @@
+[submodule "submodules/GaussianPro"]
+	path = submodules/GaussianPro
+	url = https://github.com/Pierce-Su/GaussianPro.git
+[submodule "submodules/vggt"]
+	path = submodules/vggt
+	url = https://github.com/Pierce-Su/vggt.git
