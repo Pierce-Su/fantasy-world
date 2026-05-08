@@ -154,11 +154,13 @@ class FantasyWorldFusionModel(nn.Module, PyTorchModelHubMixin):
                     ModelConfig(
                         model_id=model_id,
                         origin_file_pattern="models_t5_umt5-xxl-enc-bf16.pth",
-                        local_model_path=dit_path),
+                        local_model_path=dit_path,
+                        download_resource="HuggingFace"),
                     ModelConfig(
                         model_id=model_id,
                         origin_file_pattern="Wan2.1_VAE.pth",
-                        local_model_path=dit_path),
+                        local_model_path=dit_path,
+                        download_resource="HuggingFace"),
                 ],
             )
         else:

@@ -346,7 +346,7 @@ class WanVideoPipeline(BasePipeline):
         torch_dtype: torch.dtype = torch.bfloat16,
         device: Union[str, torch.device] = "cuda",
         model_configs: list[ModelConfig] = [],
-        tokenizer_config: ModelConfig = ModelConfig(model_id="Wan-AI/Wan2.1-T2V-1.3B", origin_file_pattern="google/*"),
+        tokenizer_config: ModelConfig = ModelConfig(model_id="Wan-AI/Wan2.1-T2V-1.3B", origin_file_pattern="google/*", download_resource="HuggingFace"),
         audio_processor_config: ModelConfig = None,
         redirect_common_files: bool = True,
         use_usp=False,
@@ -358,12 +358,20 @@ class WanVideoPipeline(BasePipeline):
                 "Wan2.1_VAE.pth": "Wan-AI/Wan2.1-T2V-1.3B",
                 "models_clip_open-clip-xlm-roberta-large-vit-huge-14.pth": "Wan-AI/Wan2.1-I2V-14B-480P",
             }
+            redirect_download_resource = {
+                "models_t5_umt5-xxl-enc-bf16.pth": "HuggingFace",
+                "Wan2.1_VAE.pth": "HuggingFace",
+                "models_clip_open-clip-xlm-roberta-large-vit-huge-14.pth": "HuggingFace",
+            }
             for model_config in model_configs:
                 if model_config.origin_file_pattern is None or model_config.model_id is None:
                     continue
-                if model_config.origin_file_pattern in redirect_dict and model_config.model_id != redirect_dict[model_config.origin_file_pattern]:
-                    print(f"To avoid repeatedly downloading model files, ({model_config.model_id}, {model_config.origin_file_pattern}) is redirected to ({redirect_dict[model_config.origin_file_pattern]}, {model_config.origin_file_pattern}). You can use `redirect_common_files=False` to disable file redirection.")
-                    model_config.model_id = redirect_dict[model_config.origin_file_pattern]
+                if model_config.origin_file_pattern in redirect_dict:
+                    if model_config.model_id != redirect_dict[model_config.origin_file_pattern]:
+                        print(f"To avoid repeatedly downloading model files, ({model_config.model_id}, {model_config.origin_file_pattern}) is redirected to ({redirect_dict[model_config.origin_file_pattern]}, {model_config.origin_file_pattern}). You can use `redirect_common_files=False` to disable file redirection.")
+                        model_config.model_id = redirect_dict[model_config.origin_file_pattern]
+                    # Always force the redirected common files to Hugging Face.
+                    model_config.download_resource = redirect_download_resource[model_config.origin_file_pattern]
         
         # Initialize pipeline
         pipe = WanVideoPipeline(device=device, torch_dtype=torch_dtype)
