@@ -1,6 +1,6 @@
-[submodule "submodules/GaussianPro"]
-	path = submodules/GaussianPro
+[submodule "thirdparty/GaussianPro"]
+	path = thirdparty/GaussianPro
 	url = https://github.com/Pierce-Su/GaussianPro.git
-[submodule "submodules/vggt"]
-	path = submodules/vggt
+[submodule "thirdparty/vggt"]
+	path = thirdparty/vggt
 	url = https://github.com/Pierce-Su/vggt.git
