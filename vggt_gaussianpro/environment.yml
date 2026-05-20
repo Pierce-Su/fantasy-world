@@ -1,0 +1,43 @@
+name: fw_vggt_gp
+channels:
+  - pytorch
+  - nvidia
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.10
+  - pip
+  - conda-forge::opencv
+  - conda-forge::numpy
+  - conda-forge::pillow
+  - conda-forge::scipy
+  - pip:
+      # Force CUDA 12.8 torch wheels; other packages fall back to PyPI
+      - --index-url https://download.pytorch.org/whl/cu128
+      - --extra-index-url https://pypi.org/simple
+      - torch>=2.1
+      - torchvision
+      # VGGT core deps
+      - huggingface_hub
+      - transformers
+      - einops
+      - safetensors
+      # 3D / geometry
+      - trimesh
+      - plyfile
+      # Misc
+      - tqdm
+      - tensorboard
+      - imageio
+      - imageio-ffmpeg
+      # GaussianPro runtime deps
+      - imageio
+      - imageio-ffmpeg
+
+# After creating the environment, install:
+#   pip install -e ../thirdparty/vggt/
+#   pip install -e ../thirdparty/utils3d/
+#   pip install --no-build-isolation \
+#       ../thirdparty/GaussianPro/submodules/diff-gaussian-rasterization \
+#       ../thirdparty/GaussianPro/submodules/simple-knn \
+#       ../thirdparty/GaussianPro/submodules/Propagation

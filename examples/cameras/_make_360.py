@@ -92,8 +92,8 @@ def build(mode: str, num_frames: int = 81) -> dict:
     }
 
 
-def write(mode: str) -> Path:
-    data = build(mode)
+def write(mode: str, num_frames: int = 81) -> Path:
+    data = build(mode, num_frames)
     out_name = "camera_data_360.json" if mode == "orbit" else "camera_data_360_spin.json"
     out_path = Path(__file__).with_name(out_name)
     with out_path.open("w") as f:
@@ -106,9 +106,35 @@ def write(mode: str) -> Path:
 
 
 if __name__ == "__main__":
-    arg = sys.argv[1] if len(sys.argv) > 1 else "orbit"
-    if arg == "both":
-        write("orbit")
-        write("spin")
+    import argparse
+
+    parser = argparse.ArgumentParser(description=__doc__,
+                                     formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser.add_argument(
+        "mode",
+        nargs="?",
+        default="orbit",
+        choices=["orbit", "spin", "both"],
+        help="Camera trajectory mode (default: orbit)",
+    )
+    parser.add_argument(
+        "--num_frames",
+        type=int,
+        default=81,
+        help="Number of interpolated frames (must satisfy num_frames %% 4 == 1 "
+             "for Wan 2.2, e.g. 81, 97, 113, 129, 161). Default: 81.",
+    )
+    args = parser.parse_args()
+
+    if args.num_frames % 4 != 1:
+        # Auto-round to the nearest valid value (same logic as the model itself)
+        corrected = (args.num_frames + 2) // 4 * 4 + 1
+        print(f"Warning: --num_frames {args.num_frames} does not satisfy "
+              f"num_frames % 4 == 1. Auto-correcting to {corrected}.")
+        args.num_frames = corrected
+
+    if args.mode == "both":
+        write("orbit", args.num_frames)
+        write("spin", args.num_frames)
     else:
-        write(arg)
+        write(args.mode, args.num_frames)

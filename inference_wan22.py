@@ -472,6 +472,14 @@ def main():
         default=1024,
         help="Random seed"
     )
+    parser.add_argument(
+        "--frames",
+        type=int,
+        default=81,
+        help="Number of frames to generate (must satisfy frames %% 4 == 1; "
+             "e.g. 81, 97, 113, 129, 161). Must match the number of entries in "
+             "cameras_interp in the camera JSON."
+    )
 
     args = parser.parse_args()
 
@@ -492,6 +500,7 @@ def main():
         height=args.height,
         width=args.width,
         base_seed=args.seed,
+        frames=args.frames,
     )
     video, prediction = model.generate_video(
         image_path=args.image_path,
