@@ -147,6 +147,9 @@ venv.bak/
 # Model files
 models/
 
+# Dataset files
+data/
+
 # Spyder project settings
 .spyderproject
 .spyproject

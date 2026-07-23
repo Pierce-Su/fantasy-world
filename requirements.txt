@@ -15,7 +15,7 @@ imageio-ffmpeg
 gradio>=5.0.0
 numpy>=1.23.5,<2
 Pillow
-huggingface_hub
+huggingface_hub==0.26.0
 einops
 safetensors
 matplotlib
