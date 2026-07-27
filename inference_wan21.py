@@ -16,7 +16,7 @@ import torch
 from FantasyWorld.fusion.model_wan21 import FantasyWorldFusionModel
 from FantasyWorld.diffsynth_wan21.data.dataset_re10k import RealEstate10KPoseProcessor
 from FantasyWorld.vggt.utils.pose_enc import extri_intri_to_pose_encoding
-from utils import cameras_json_to_camera_list, get_pointclouds, save_colored_pointcloud_ply, normalize_scene, get_intrinsic_matrix, batch_depth_to_world, save_video_imageio
+from utils import cameras_json_to_camera_list, get_pointclouds, save_colored_pointcloud_ply, normalize_scene, get_intrinsic_matrix, batch_depth_to_world, save_video_imageio, extract_video_frames_and_keyframes
 
 sys.path.insert(0, "thirdparty/MoGe")
 from moge.model.v2 import MoGeModel
@@ -137,6 +137,18 @@ def parse_args():
         type=int,
         default=4,
         help="Stride for saving point clouds"
+    )
+    parser.add_argument(
+        "--extract_frames",
+        type=str2bool,
+        default=True,
+        help="Extract frames/ and keyframes/ from the saved video (default: True)",
+    )
+    parser.add_argument(
+        "--keyframe_interval",
+        type=int,
+        default=16,
+        help="When extract_frames is enabled, save every N-th frame to keyframes/ (default: 16)",
     )
     args = parser.parse_args()
     return args
@@ -380,6 +392,13 @@ def main():
 
     save_video_imageio(video, output_path_video, fps=args.fps)
     print(f"Video saved to: {output_path_video}")
+
+    if args.extract_frames:
+        extract_video_frames_and_keyframes(
+            video_path=output_path_video,
+            output_dir=output_dir,
+            keyframe_interval=args.keyframe_interval,
+        )
 
     recon_worldpoints = get_pointclouds(prediction, fix_first_frame=True)
 

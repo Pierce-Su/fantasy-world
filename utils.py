@@ -280,6 +280,85 @@ def save_video_imageio(frames_np, output_path, fps=16):
         print(f"[FAIL] Method 5 (imageio) failed: {e}")
 
 
+def extract_video_frames_and_keyframes(
+    video_path,
+    output_dir=None,
+    keyframe_interval=16,
+):
+    """
+    Extract all frames from a video into ``frames/`` and periodic keyframes
+    into ``keyframes/`` under output_dir (default: parent of video_path).
+
+    Args:
+        video_path: Path to the input video (e.g. output_dir/video.mp4).
+        output_dir: Directory that will contain ``frames/`` and ``keyframes/``.
+            Defaults to the video's parent directory.
+        keyframe_interval: Save every N-th frame (0-based) to ``keyframes/``.
+
+    Returns:
+        dict with keys ``frames_dir``, ``keyframes_dir``, ``frame_paths``,
+        ``keyframe_paths``, ``total_frames``.
+    """
+    import cv2
+    from pathlib import Path
+
+    video_path = Path(video_path)
+    if output_dir is None:
+        output_dir = video_path.parent
+    else:
+        output_dir = Path(output_dir)
+
+    if keyframe_interval < 1:
+        raise ValueError(f"keyframe_interval must be >= 1 (got {keyframe_interval})")
+
+    frames_dir = output_dir / "frames"
+    keyframes_dir = output_dir / "keyframes"
+    frames_dir.mkdir(parents=True, exist_ok=True)
+    keyframes_dir.mkdir(parents=True, exist_ok=True)
+
+    cap = cv2.VideoCapture(str(video_path))
+    if not cap.isOpened():
+        raise RuntimeError(f"Could not open video: {video_path}")
+
+    frame_paths = []
+    keyframe_paths = []
+    frame_idx = 0
+
+    while True:
+        ret, frame = cap.read()
+        if not ret:
+            break
+
+        frame_path = frames_dir / f"frame_{frame_idx:05d}.png"
+        cv2.imwrite(str(frame_path), frame)
+        frame_paths.append(frame_path)
+
+        if frame_idx % keyframe_interval == 0:
+            keyframe_path = keyframes_dir / f"keyframe_{frame_idx:05d}.png"
+            cv2.imwrite(str(keyframe_path), frame)
+            keyframe_paths.append(keyframe_path)
+
+        frame_idx += 1
+
+    cap.release()
+
+    if frame_idx == 0:
+        raise RuntimeError(f"Video reports 0 frames: {video_path}")
+
+    print(
+        f"[extract_frames] Saved {frame_idx} frames → {frames_dir}, "
+        f"{len(keyframe_paths)} keyframes (every {keyframe_interval}) → {keyframes_dir}"
+    )
+
+    return {
+        "frames_dir": frames_dir,
+        "keyframes_dir": keyframes_dir,
+        "frame_paths": frame_paths,
+        "keyframe_paths": keyframe_paths,
+        "total_frames": frame_idx,
+    }
+
+
 def resize_by_short_side_and_update_intrinsics(
     image,
     depth_map,

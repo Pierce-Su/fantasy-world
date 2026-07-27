@@ -16,7 +16,8 @@ import torch
 
 from utils import cameras_json_to_camera_list, get_intrinsic_matrix, save_video_imageio, \
     depth_to_world_coords_points, normalize_scene, \
-    batch_depth_to_world, save_colored_pointcloud_ply, get_pointclouds
+    batch_depth_to_world, save_colored_pointcloud_ply, get_pointclouds, \
+    extract_video_frames_and_keyframes
 from FantasyWorld.vggt.utils.pose_enc import extri_intri_to_pose_encoding, pose_encoding_to_extri_intri
 from FantasyWorld.diffsynth_wan22.data.dataset_re10k import RealEstate10KPoseProcessor
 from FantasyWorld.fusion.model_wan22 import FantasyWorldFusionModel
@@ -480,6 +481,18 @@ def main():
              "e.g. 81, 97, 113, 129, 161). Must match the number of entries in "
              "cameras_interp in the camera JSON."
     )
+    parser.add_argument(
+        "--extract_frames",
+        type=str2bool,
+        default=True,
+        help="Extract frames/ and keyframes/ from the saved video (default: True)",
+    )
+    parser.add_argument(
+        "--keyframe_interval",
+        type=int,
+        default=16,
+        help="When extract_frames is enabled, save every N-th frame to keyframes/ (default: 16)",
+    )
 
     args = parser.parse_args()
 
@@ -521,6 +534,13 @@ def main():
 
     save_video_imageio(video, output_path, fps=args.fps)
     print(f"Video saved to: {output_path}")
+
+    if args.extract_frames:
+        extract_video_frames_and_keyframes(
+            video_path=output_path,
+            output_dir=output_dir,
+            keyframe_interval=args.keyframe_interval,
+        )
 
     recon_worldpoints = get_pointclouds(prediction, fix_first_frame=True)
     recon_ply_save_path = output_dir / \
