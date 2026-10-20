@@ -11,6 +11,7 @@ import sys
 import numpy as np
 from PIL import Image
 from tqdm import tqdm
+from relay_media import write_segment
 
 import torch
 
@@ -348,6 +349,7 @@ class FantasyWorldSampler:
                                                                            input_image=input_image,
                                                                            end_image=end_image,
                                                                            height=self.height, width=self.width,
+                                                                           num_frames=self.num_frames,
                                                                            return_condition=True
                                                                            )
             ctx_pos, ctx_neg = inputs_posi["context"], inputs_nega["context"]
@@ -496,10 +498,19 @@ def main():
 
     args = parser.parse_args()
 
+    if args.frames < 5 or args.frames % 4 != 1:
+        raise ValueError('--frames must be 4k+1 with k>=1')
+    if args.width <= 0 or args.height <= 0 or args.width % 16 or args.height % 16:
+        raise ValueError('--width and --height must be positive multiples of 16')
+    if args.fps <= 0 or args.sample_steps <= 0:
+        raise ValueError('--fps and --sample_steps must be positive')
     assert os.path.exists(args.image_path)
     if args.end_image_path:
         assert os.path.exists(args.end_image_path)
-    camera_data = json.load(open(args.camera_json_path))
+    with open(args.camera_json_path) as camera_file:
+        camera_data = json.load(camera_file)
+    if len(camera_data['cameras_interp']) != args.frames:
+        raise ValueError('camera entry count must equal --frames')
     camera_params = cameras_json_to_camera_list(camera_data, image_size=(args.height, args.width))
 
     print("Initializing FantasyWorld model...")
@@ -523,16 +534,16 @@ def main():
         camera_params=camera_params,
         using_scale=args.using_scale,
     )
-    torch.save((video, prediction), "debug.pth")
-
     # Save output video
     output_dir = Path(args.output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
+    torch.save((video, prediction), output_dir / "debug.pth")
 
     image_stem = Path(args.image_path).stem
     output_path = output_dir / "video.mp4"
 
-    save_video_imageio(video, output_path, fps=args.fps)
+    # Relay consumes the actual decoded tensor's last frame, never a lossy MP4 decode.
+    write_segment(video, output_dir, fps=args.fps)
     print(f"Video saved to: {output_path}")
 
     if args.extract_frames:

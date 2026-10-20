@@ -42,6 +42,22 @@ We provide two versions of the model to cater to different research and applicat
 
 ## 🚀 Quickstart
 
+### CPU-tested CCW 360 relay prototype (Wan2.2)
+
+See [CCW orbit relay setup, A/B protocol and commands](docs/ccw-orbit-relay.md).
+The two experiments share their prefix; only B's final segment receives the
+original starting image as an end condition. CPU planning/tests are available
+without model imports. GPU inference/effects are **NOT_RUN**; the legacy ray-K/FoV
+limitation is explicitly retained and documented.
+
+[C: bidirectional half-orbit meeting](docs/bidirectional-half-orbit.md) adds a
+standalone four-segment protocol from the same original image: CCW L1/L2 and
+CW R1/R2, with only R2 conditioned on L2's raw endpoint. CPU-safe plan/run and
+resumable provenance are available; no cross-experiment A/B import is supported.
+The presentation reverses both CW segment order and frame order; CW scene time
+therefore runs backwards. This is an asymmetric appearance-condition experiment,
+not verified geometry closure. GPU/model effects remain **NOT_RUN**.
+
 ### Installation
 
 1. **Clone the repository**
