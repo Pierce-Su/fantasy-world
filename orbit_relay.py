@@ -18,7 +18,7 @@ SOURCE_FILES = ['orbit_relay.py', 'relay_media.py', 'inference_wan22.py', 'utils
                 'FantasyWorld/diffsynth_wan22/data/dataset_re10k.py',
                 'FantasyWorld/vggt/utils/pose_enc.py', 'FantasyWorld/fusion/model_wan22.py',
                 'FantasyWorld/diffsynth_wan22/pipelines/wan_video_new.py']
-RAY_POLICY = 'legacy_pixel_K_rescaled_again_UNVERIFIED_FOV'
+RAY_POLICY = 'direct_pixel_K_v1_decoder_center_UNVERIFIED_VIDEO_FOV'
 
 
 @dataclass

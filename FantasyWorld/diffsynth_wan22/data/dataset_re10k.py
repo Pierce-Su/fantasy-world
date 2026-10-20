@@ -245,6 +245,10 @@ class RealEstate10KPoseProcessor:
         return plucker_embedding
 
     def get_plucker_embedding_direct_from_cam_params(self, pose_enc, image_size,  image_path=None):
+        """Use decoder pixel K, unlike the normalized pose-file path.
+
+        Preserve the decoder's W/2,H/2 principal point; do not scale K twice.
+        """
         extrinsic, intrinsic = pose_encoding_to_extri_intri(pose_enc, image_size ,pose_encoding_type="absT_quaR_FoV")
         extrinsics_np = extrinsic.cpu().numpy().squeeze(0)  # Shape: (5, 3, 4)
         intrinsics_np = intrinsic.cpu().numpy().squeeze(0)  # Shape: (5, 3, 3)
@@ -282,10 +286,10 @@ class RealEstate10KPoseProcessor:
                 resized_ori_h = self.sample_size[1] / ori_wh_ratio
                 for cam_param in cam_params:
                     cam_param.fy = resized_ori_h * cam_param.fy / self.sample_size[0]
-        intrinsics = np.asarray([[cam_param.fx * self.sample_size[1],
-                                  cam_param.fy * self.sample_size[0],
-                                  cam_param.cx * self.sample_size[1],
-                                  cam_param.cy * self.sample_size[0]]
+        intrinsics = np.asarray([[cam_param.fx,
+                                  cam_param.fy,
+                                  cam_param.cx,
+                                  cam_param.cy]
                                  for cam_param in cam_params], dtype=np.float32)
         intrinsics = torch.as_tensor(intrinsics)[None]                  # [1, n_frame, 4]
         if self.relative_pose:

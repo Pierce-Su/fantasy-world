@@ -43,7 +43,7 @@ def test_c_global_pose_sign_gauge_scale_and_meeting(tmp_path):
     for actual, expected in zip(tour_poses, camera_segments(cfg)):
         np.testing.assert_allclose(actual, expected['cameras_interp'], atol=1e-12)
     assert all('--using_scale' in s['command'] and s['command'][s['command'].index('--using_scale')+1] == 'False' for s in m['segments'])
-    assert m['identity']['ray_policy'] == 'legacy_pixel_K_rescaled_again_UNVERIFIED_FOV'
+    assert m['identity']['ray_policy'] == 'direct_pixel_K_v1_decoder_center_UNVERIFIED_VIDEO_FOV'
 
 
 def test_c_raw_routing_dependency_end_hash_resume_and_backend_separation(tmp_path):
