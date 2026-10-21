@@ -220,3 +220,30 @@ __marimo__/
 output-wan21/
 .tools/
 output-relay/
+
+# Experiment products (not source/config/templates or upstream assets)
+/.hf-cache/
+/.hf_home/
+/curated_set/
+/output-wan22/
+/outputs/
+/runs/
+/deliverables/
+/.worktrees/
+*.pth
+*.pt
+*.safetensors
+*.ckpt
+*.ply
+*.tar
+*.tar.gz
+*.zip
+*.part[0-9]*
+*.mp4
+# Upstream checked-in project media remain tracked; do not untrack them.
+.env.*
+!.env.example
+*.pem
+id_ed25519*
+/agent-logs/
+/.hermes/

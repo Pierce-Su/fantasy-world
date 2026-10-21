@@ -1,0 +1,18 @@
+{
+  "image": "/absolute/path/to/scene-0000-prepared.png",
+  "prompt": "In the Cozy Café, a warm ambiance envelops the bar counter and dining tables topped with inviting chairs.",
+  "negative_prompt": "",
+  "angle": 60,
+  "radius": 1,
+  "frames": 81,
+  "seed": 1024,
+  "width": 832,
+  "height": 480,
+  "fps": 16,
+  "focal": 500,
+  "steps": 50,
+  "wan_ckpt_path": "/absolute/path/to/models",
+  "model_ckpt_high": "/absolute/path/to/models/FantasyWorld-Wan2.2-Fun-A14B-Control-Camera/high_noise_model.pth",
+  "model_ckpt_low": "/absolute/path/to/models/FantasyWorld-Wan2.2-Fun-A14B-Control-Camera/low_noise_model.pth",
+  "python": "/absolute/path/to/fantasy-world/.venv/bin/python"
+}
