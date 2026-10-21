@@ -49,3 +49,14 @@ def test_real_archive_extract_hardlink_hash_and_corruption(tmp_path):
     with pytest.raises(ValueError):archive.inventory(root,['../result.tar.gz'])
     (root/'outside').symlink_to(tmp_path/'result.tar.gz')
     with pytest.raises(ValueError):archive.inventory(root,['outside'])
+
+
+def test_comparison_rejects_wrong_shape_real_media(tmp_path):
+    import subprocess
+    from relay_media import write_segment
+    source=tmp_path/'source'
+    write_segment(np.full((5,32,32,3),80,dtype=np.uint8),source,16)
+    script=Path(__file__).resolve().parents[1]/'scripts/compare_orbits.py'
+    result=subprocess.run([sys.executable,str(script),'--clip60',str(source/'video.mp4'),'--clip90',str(source/'video.mp4'),'--output-root',str(tmp_path/'comparison')],capture_output=True,text=True)
+    assert result.returncode!=0 and 'AssertionError' in result.stderr
+    assert not (tmp_path/'comparison/orbit-060-vs-090_side-by-side.mp4').exists()

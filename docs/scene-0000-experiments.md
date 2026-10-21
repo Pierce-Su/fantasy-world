@@ -80,6 +80,17 @@ It refuses an existing output root. Historical machine-specific launchers and
 all exact argv/config/receipts are preserved in the evidence backup, not silently
 replaced by these portable wrappers. No new GPU measurement was run for publication.
 
+## Existing-video comparison (no model execution)
+
+`python scripts/compare_orbits.py --clip60 /original/60.mp4 --clip90 /original/90.mp4 --output-root /new/comparison`
+
+This ports the historical comparison script to explicit paths. It is intentionally
+bounded to81 frames832×480@16fps: full decode/hash inputs, five same-time pairs,
+all81-frame contact sheets and a presentation-only side-by-side reencode. Originals
+are never modified; optional `--font` selects a Pillow font. Frame labels are nominal
+command angles, not pose estimates. Publication exercised this on the real saved60/90
+clips; that is media analysis, not a new inference or quality/geometry acceptance.
+
 ## Archives and results
 
 `python scripts/evidence_archive.py create --root /results --paths-json /file-list.json --archive /new/results.tar.gz`
